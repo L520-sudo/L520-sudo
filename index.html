@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问真八字 - 生辰八字算命</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; color: #f5f0e6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 30px 0; }
+        h1 { color: #c9a959; font-size: 2rem; letter-spacing: 8px; }
+        .form-card { background: rgba(45, 45, 68, 0.6); border: 1px solid rgba(201, 169, 89, 0.2); border-radius: 16px; padding: 30px; margin-bottom: 25px; }
+        .form-title { color: #c9a959; text-align: center; margin-bottom: 20px; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
+        .form-group { flex: 1; min-width: 120px; }
+        .form-group label { display: block; color: #c9a959; margin-bottom: 8px; }
+        .form-group select { width: 100%; padding: 10px; background: rgba(26, 26, 46, 0.8); border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 8px; color: #f5f0e6; }
+        .gender-group { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+        .gender-option { padding: 10px 30px; border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 8px; cursor: pointer; }
+        .gender-option.selected { background: rgba(201, 169, 89, 0.15); }
+        .submit-btn { width: 100%; max-width: 200px; margin: 0 auto; display: block; padding: 12px; background: #c9a959; color: #1a1a2e; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        .result-card { background: rgba(45, 45, 68, 0.6); border: 1px solid rgba(201, 169, 89, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px; }
+        .section-title { color: #c9a959; text-align: center; margin-bottom: 20px; font-size: 1.3rem; }
+        
+        .bazi-row { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .bazi-item { text-align: center; min-width: 100px; }
+        .bazi-label { color: #c9a959; font-size: 0.8rem; }
+        .bazi-ganzhi { font-size: 1.8rem; margin: 10px 0; color: #c9a959; }
+        .bazi-canggan { font-size: 0.8rem; opacity: 0.7; }
+        
+        .wuxing-section { margin-bottom: 20px; }
+        .wuxing-bar { height: 25px; background: rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 10px; position: relative; }
+        .wuxing-fill { height: 100%; border-radius: 12px; }
+        .wuxing-text { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: #c9a959; }
+        .mu { background: linear-gradient(90deg, #4a7c59, #5a8c69); }
+        .huo { background: linear-gradient(90deg, #a63d40, #b64d50); }
+        .tu { background: linear-gradient(90deg, #c9a959, #d9b969); }
+        .jin { background: linear-gradient(90deg, #8a8a8a, #9a9a9a); }
+        .shui { background: linear-gradient(90deg, #4a6a8a, #5a7a9a); }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-item { background: rgba(26, 26, 46, 0.8); padding: 15px; border-radius: 10px; text-align: center; }
+        .stat-label { color: #c9a959; font-size: 0.9rem; }
+        .stat-value { font-size: 1.5rem; margin-top: 5px; }
+        
+        .daxun-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .daxun-item { background: rgba(26, 26, 46, 0.8); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .daxun-item:hover { background: rgba(201, 169, 89, 0.2); }
+        .daxun-item.active { background: rgba(201, 169, 89, 0.3); }
+        
+        .interp-section { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(201, 169, 89, 0.1); }
+        .interp-title { color: #c9a959; font-size: 1.1rem; margin-bottom: 12px; }
+        .interp-content { line-height: 1.9; text-indent: 2em; }
+        
+        .shishen-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .shishen-table th, .shishen-table td { padding: 10px; text-align: center; border: 1px solid rgba(201, 169, 89, 0.1); }
+        .shishen-table th { color: #c9a959; }
+        
+        footer { text-align: center; padding: 20px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><h1>问真八字</h1></header>
+        
+        <div class="form-card">
+            <div class="form-title">输入出生信息</div>
+            <div class="form-row">
+                <div class="form-group"><label>出生年份</label><select id="year"></select></div>
+                <div class="form-group"><label>出生月份</label><select id="month"></select></div>
+                <div class="form-group"><label>出生日期</label><select id="day"></select></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>出生时辰(24小时制)</label><select id="hour"></select></div>
+                <div class="form-group"><label>出生分钟</label><select id="minute"></select></div>
+            </div>
+            <div class="gender-group">
+                <div class="gender-option selected" data-gender="男" onclick="selectGender(this)">男</div>
+                <div class="gender-option" data-gender="女" onclick="selectGender(this)">女</div>
+            </div>
+            <button class="submit-btn" onclick="calculate()">开始算命</button>
+        </div>
+
+        <div id="result" style="display: none;">
+            <div class="result-card">
+                <div class="section-title">八字排盘</div>
+                <div class="bazi-row">
+                    <div class="bazi-item"><div class="bazi-label">年柱</div><div class="bazi-ganzhi" id="bazi-nian">--</div><div class="bazi-canggan" id="cang-nian"></div></div>
+                    <div class="bazi-item"><div class="bazi-label">月柱</div><div class="bazi-ganzhi" id="bazi-yue">--</div><div class="bazi-canggan" id="cang-yue"></div></div>
+                    <div class="bazi-item"><div class="bazi-label">日柱</div><div class="bazi-ganzhi" id="bazi-ri">--</div><div class="bazi-canggan" id="cang-ri"></div></div>
+                    <div class="bazi-item"><div class="bazi-label">时柱</div><div class="bazi-ganzhi" id="bazi-shi">--</div><div class="bazi-canggan" id="cang-shi"></div></div>
+                </div>
+                <table class="shishen-table">
+                    <tr><th>项目</th><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr>
+                    <tr><td>十神</td><td id="shishen-nian"></td><td id="shishen-yue"></td><td id="shishen-ri"></td><td id="shishen-shi"></td></tr>
+                    <tr><td>纳音</td><td id="nayin-nian"></td><td id="nayin-yue"></td><td id="nayin-ri"></td><td id="nayin-shi"></td></tr>
+                </table>
+            </div>
+
+            <div class="result-card">
+                <div class="section-title">五行分析</div>
+                <div class="wuxing-section">
+                    <div><span>木:</span><div class="wuxing-bar"><div class="wuxing-fill mu" id="wu-mu"></div><div class="wuxing-text" id="mu-val"></div></div></div>
+                    <div><span>火:</span><div class="wuxing-bar"><div class="wuxing-fill huo" id="wu-huo"></div><div class="wuxing-text" id="huo-val"></div></div></div>
+                    <div><span>土:</span><div class="wuxing-bar"><div class="wuxing-fill tu" id="wu-tu"></div><div class="wuxing-text" id="tu-val"></div></div></div>
+                    <div><span>金:</span><div class="wuxing-bar"><div class="wuxing-fill jin" id="wu-jin"></div><div class="wuxing-text" id="jin-val"></div></div></div>
+                    <div><span>水:</span><div class="wuxing-bar"><div class="wuxing-fill shui" id="wu-shui"></div><div class="wuxing-text" id="shui-val"></div></div></div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="stat-label">日主强弱</div><div class="stat-value" id="rizhu-qiangruo">--</div></div>
+                    <div class="stat-item"><div class="stat-label">五行总分</div><div class="stat-value" id="total-score">--</div></div>
+                    <div class="stat-item"><div class="stat-label">平衡度</div><div class="stat-value" id="balance-score">--</div></div>
+                    <div class="stat-item"><div class="stat-label">用神提示</div><div class="stat-value" id="yong-shen">--</div></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="section-title">十神详解</div>
+                <div class="interp-section">
+                    <div class="interp-title">十神分布</div>
+                    <div class="interp-content" id="shishen-detail"></div>
+                </div>
+                <div class="interp-section">
+                    <div class="interp-title">十神含义解析</div>
+                    <div class="interp-content" id="shishen-meaning"></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="section-title">性格分析</div>
+                <div class="interp-content" id="xingge-detail"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="section-title">事业与财运</div>
+                <div class="interp-section">
+                    <div class="interp-title">事业发展</div>
+                    <div class="interp-content" id="career-detail"></div>
+                </div>
+                <div class="interp-section">
+                    <div class="interp-title">财运分析</div>
+                    <div class="interp-content" id="wealth-detail"></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="section-title">感情与健康</div>
+                <div class="interp-section">
+                    <div class="interp-title">感情婚姻</div>
+                    <div class="interp-content" id="love-detail"></div>
+                </div>
+                <div class="interp-section">
+                    <div class="interp-title">健康状况</div>
+                    <div class="interp-content" id="health-detail"></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="section-title">十年大运</div>
+                <div class="daxun-grid" id="daxun-grid"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="section-title">流年运势预测</div>
+                <div class="interp-content" id="forecast-detail"></div>
+            </div>
+        </div>
+
+        <footer>问真八字 · 仅供娱乐参考</footer>
+    </div>
+
+    <script>
+        const TG = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+        const DZ = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+        const WX = {'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水',
+                   '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水'};
+        const ZG = {'子':['癸'],'丑':['己','癸','辛'],'寅':['甲','丙','戊'],'卯':['乙'],'辰':['戊','乙','癸'],'巳':['丙','庚','戊'],
+                   '午':['丁','己'],'未':['己','丁','乙'],'申':['庚','壬','戊'],'酉':['辛'],'戌':['戊','辛','丁'],'亥':['壬','甲']};
+        const NY = {'甲子':'海中金','乙丑':'海中金','丙寅':'炉中火','丁卯':'炉中火','戊辰':'大林木','己巳':'大林木',
+                   '庚午':'路旁土','辛未':'路旁土','壬申':'剑锋金','癸酉':'剑锋金','甲戌':'山头火','乙亥':'山头火',
+                   '丙子':'涧下水','丁丑':'涧下水','戊寅':'城头土','己卯':'城头土','庚辰':'白蜡金','辛巳':'白蜡金',
+                   '壬午':'杨柳木','癸未':'杨柳木','甲申':'泉中水','乙酉':'泉中水','丙戌':'屋上土','丁亥':'屋上土',
+                   '戊子':'霹雳火','己丑':'霹雳火','庚寅':'松柏木','辛卯':'松柏木','壬辰':'长流水','癸巳':'长流水',
+                   '甲午':'沙中金','乙未':'沙中金','丙申':'山下火','丁酉':'山下火','戊戌':'平地木','己亥':'平地木',
+                   '庚子':'壁上土','辛丑':'壁上土','壬寅':'金箔金','癸卯':'金箔金','甲辰':'覆灯火','乙巳':'覆灯火',
+                   '丙午':'天河水','丁未':'天河水','戊申':'大驿土','己酉':'大驿土','庚戌':'钗钏金','辛亥':'钗钏金',
+                   '壬子':'桑柘木','癸丑':'桑柘木','甲寅':'大溪水','乙卯':'大溪水','丙辰':'沙中土','丁巳':'沙中土',
+                   '戊午':'天上火','己未':'天上火','庚申':'石榴木','辛酉':'石榴木','壬戌':'大海水','癸亥':'大海水'};
+
+        function init() {
+            const year = document.getElementById('year');
+            const month = document.getElementById('month');
+            const day = document.getElementById('day');
+            const hour = document.getElementById('hour');
+            const minute = document.getElementById('minute');
+            
+            const now = new Date();
+            for (let y = now.getFullYear(); y >= 1900; y--) year.add(new Option(y+'年', y));
+            for (let m = 1; m <= 12; m++) month.add(new Option(m+'月', m));
+            for (let d = 1; d <= 31; d++) day.add(new Option(d+'日', d));
+            for (let h = 0; h < 24; h++) hour.add(new Option(h+'时', h));
+            for (let m = 0; m < 60; m += 5) minute.add(new Option(m+'分', m));
+        }
+
+        function selectGender(el) {
+            document.querySelectorAll('.gender-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function getNian(year) { return {g:TG[(year-4)%10], z:DZ[(year-4)%12]}; }
+        function getYue(year, month, day) {
+            const ng = getNian(year).g;
+            let zi = (month + 1) % 12;
+            if (day >= 20 && month !== 2) zi = (zi + 1) % 12;
+            return {g:TG[((TG.indexOf(ng)%5)*2+zi)%10], z:DZ[zi]};
+        }
+        function getRi(year, month, day) {
+            const base = new Date(1900, 0, 1);
+            const target = new Date(year, month-1, day);
+            const days = Math.floor((target - base) / (86400000));
+            return {g:TG[days%10], z:DZ[days%12]};
+        }
+        function getShi(hour, rig) {
+            const zi = hour % 12;
+            return {g:TG[((TG.indexOf(rig)%5)*2+zi)%10], z:DZ[zi]};
+        }
+
+        function getShishen(gan, rig) {
+            const pairs = {
+                '比肩':['甲甲','乙乙','丙丙','丁丁','戊戊','己己','庚庚','辛辛','壬壬','癸癸'],
+                '劫财':['乙甲','甲乙','丁丙','丙丁','己戊','戊己','辛庚','庚辛','癸壬','壬癸'],
+                '食神':['丙甲','丁乙','戊丙','己丁','庚戊','辛己','壬庚','癸辛','甲壬','乙癸'],
+                '伤官':['丁甲','丙乙','己丙','戊丁','辛戊','庚己','癸庚','壬辛','乙壬','甲癸'],
+                '正财':['戊甲','己乙','庚丙','辛丁','壬戊','癸己','甲庚','乙辛','丙壬','丁癸'],
+                '偏财':['己甲','戊乙','辛丙','庚丁','癸戊','壬己','乙庚','甲辛','丁壬','丙癸'],
+                '正官':['庚甲','辛乙','壬丙','癸丁','甲戊','乙己','丙庚','丁辛','戊壬','己癸'],
+                '七杀':['辛甲','庚乙','癸丙','壬丁','乙戊','甲己','丁庚','丙辛','己壬','戊癸'],
+                '正印':['壬甲','癸乙','甲丙','乙丁','丙戊','丁己','戊庚','己辛','庚壬','辛癸'],
+                '偏印':['癸甲','壬乙','乙丙','甲丁','丁戊','丙己','己庚','戊辛','辛壬','庚癸']
+            };
+            const pair = gan + rig;
+            for (const [name, arr] of Object.entries(pairs)) {
+                if (arr.includes(pair)) return name;
+            }
+            return '';
+        }
+
+        function calcWuxing(bazi) {
+            const scores = {木:0,火:0,土:0,金:0,水:0};
+            [bazi.n,bazi.y,bazi.r,bazi.s].forEach(p => {
+                scores[WX[p.g]] += 2;
+                scores[WX[p.z]] += 1;
+                ZG[p.z].forEach(g => scores[WX[g]] += 1);
+            });
+            return scores;
+        }
+
+        function judgeQiangruo(bazi, wuxing) {
+            const riWx = WX[bazi.r.g];
+            const yueWx = WX[bazi.y.z];
+            let score = 0;
+            if (riWx === yueWx) score += 3;
+            const sheng = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
+            if (sheng[riWx] === yueWx) score += 1;
+            if (sheng[yueWx] === riWx) score -= 1;
+            if (wuxing[riWx] > 8) score += 2;
+            if (wuxing[riWx] < 4) score -= 2;
+            return score >= 4 ? '身强' : score >= 2 ? '偏强' : score >= -2 ? '中和' : score >= -4 ? '偏弱' : '身弱';
+        }
+
+        function calcBalance(wuxing) {
+            const total = Object.values(wuxing).reduce((a,b)=>a+b,0);
+            const avg = total / 5;
+            let variance = 0;
+            Object.values(wuxing).forEach(v => variance += Math.pow(v - avg, 2));
+            const stdDev = Math.sqrt(variance / 5);
+            return Math.max(0, Math.round((1 - stdDev / avg) * 100));
+        }
+
+        function getYongShen(wuxing, qiangruo) {
+            const sorted = Object.entries(wuxing).sort((a,b) => a[1] - b[1]);
+            const weak = sorted.slice(0, 2).map(item => item[0]);
+            const strong = sorted.slice(-2).map(item => item[0]);
+            
+            if (qiangruo === '身强' || qiangruo === '偏强') {
+                return '建议用神：' + weak.join('、');
+            } else if (qiangruo === '身弱' || qiangruo === '偏弱') {
+                return '建议用神：' + strong.join('、');
+            }
+            return '五行平衡，用神灵活';
+        }
+
+        function getShishenDetail(bazi) {
+            const riGan = bazi.r.g;
+            const shishenList = {
+                nian: getShishen(bazi.n.g, riGan),
+                yue: getShishen(bazi.y.g, riGan),
+                ri: getShishen(bazi.r.g, riGan),
+                shi: getShishen(bazi.s.g, riGan)
+            };
+            
+            const counts = {};
+            Object.values(shishenList).forEach(s => { counts[s] = (counts[s] || 0) + 1; });
+            
+            let detail = `您的八字十神分布为：年柱${shishenList.nian}、月柱${shishenList.yue}、日柱${shishenList.ri}、时柱${shishenList.shi}。`;
+            detail += '<br><br>十神数量统计：';
+            for (const [name, count] of Object.entries(counts)) {
+                detail += `${name}${count}个，`;
+            }
+            detail = detail.slice(0, -1) + '。';
+            
+            return detail;
+        }
+
+        function getShishenMeaning(shishen) {
+            const meanings = {
+                '比肩': '比肩代表朋友、同辈、竞争。比肩多者性格开朗，朋友众多，但也容易有竞争压力，理财需谨慎，避免钱财流失。',
+                '劫财': '劫财代表兄弟姐妹、竞争者、意外开销。劫财旺者行动力强，但容易冲动消费，感情方面可能有第三者介入。',
+                '食神': '食神代表智慧、创造力、享受。食神旺者聪明才智出众，艺术天赋高，财运不错，适合文化艺术领域发展。',
+                '伤官': '伤官代表才华、叛逆、创造力。伤官旺者思维敏捷，敢于创新，但需注意口舌是非，避免锋芒太露。',
+                '正财': '正财代表正业收入、稳定财源、妻子。正财旺者财运稳定，适合踏实工作，家庭观念强。',
+                '偏财': '偏财代表意外之财、投资收益、父亲。偏财旺者财运起伏大，适合投资理财，但需注意风险控制。',
+                '正官': '正官代表事业、地位、上司、丈夫。正官旺者事业心强，有领导才能，适合公职或管理岗位。',
+                '七杀': '七杀代表挑战、权威、魄力。七杀旺者能力出众，但性格急躁，需注意人际关系和健康问题。',
+                '正印': '正印代表学业、贵人、母亲。正印旺者学业优异，贵人相助，适合学术研究或稳定工作。',
+                '偏印': '偏印代表智慧、孤独、直觉。偏印旺者思维独特，适合研究思考，但需注意情绪管理。'
+            };
+            return meanings[shishen] || '';
+        }
+
+        function getXinggeDetail(bazi, wuxing) {
+            const riGan = bazi.r.g;
+            const riWx = WX[riGan];
+            
+            const ganTraits = {
+                '甲': '甲木日主，如参天大树，性格正直、有担当，上进心强，富有领导才能，但有时过于固执。',
+                '乙': '乙木日主，如花草藤蔓，性格温和、灵活变通，富有艺术天赋，善于协调人际关系。',
+                '丙': '丙火日主，如太阳之火，性格热情开朗、积极主动，社交能力强，但有时过于急躁。',
+                '丁': '丁火日主，如灯火之火，性格细腻内敛、内心丰富，富有创意，注重细节。',
+                '戊': '戊土日主，如高山厚土，性格稳重踏实、诚实守信，做事持之以恒，但有时过于保守。',
+                '己': '己土日主，如田园之土，性格谦逊包容、善于协调，富有耐心，适合团队合作。',
+                '庚': '庚金日主，如刀斧之金，性格刚毅果断、正义感强，做事干脆利落，但有时过于刚硬。',
+                '辛': '辛金日主，如珠玉之金，性格精致敏锐、追求完美，审美能力强，注重品质。',
+                '壬': '壬水日主，如江海之水，性格聪明灵活、思维敏捷，适应力强，但有时过于多变。',
+                '癸': '癸水日主，如雨露之水，性格柔和内敛、情感细腻，想象力丰富，直觉敏锐。'
+            };
+            
+            let detail = ganTraits[riGan] + '<br><br>';
+            
+            if (wuxing[riWx] > 8) {
+                detail += `您的${riWx}元素过于旺盛，性格中${riWx === '木' ? '固执' : riWx === '火' ? '急躁' : 
+                          riWx === '土' ? '保守' : riWx === '金' ? '刚硬' : '多变'}的特质比较明显，`;
+                detail += '需要适当平衡，建议通过五行相生的方式来调和。';
+            } else if (wuxing[riWx] < 4) {
+                detail += `您的${riWx}元素稍弱，性格中${riWx === '木' ? '决断力' : riWx === '火' ? '热情' : 
+                          riWx === '土' ? '耐心' : riWx === '金' ? '果断' : '智慧'}方面需要加强。`;
+            }
+            
+            return detail;
+        }
+
+        function getCareerDetail(bazi, wuxing) {
+            const riGan = bazi.r.g;
+            const shishen = {
+                nian: getShishen(bazi.n.g, riGan),
+                yue: getShishen(bazi.y.g, riGan),
+                shi: getShishen(bazi.s.g, riGan)
+            };
+            
+            let detail = '';
+            
+            if (shishen.yue === '正官' || shishen.yue === '七杀') {
+                detail += '月柱官杀透干，事业心强，适合从事管理、公职或需要决断力的工作。';
+            } else if (shishen.yue === '食神' || shishen.yue === '伤官') {
+                detail += '月柱食伤透干，创造力强，适合从事文化艺术、创意设计或技术研发工作。';
+            } else if (shishen.yue === '正财' || shishen.yue === '偏财') {
+                detail += '月柱财星透干，理财能力强，适合从商或从事金融行业。';
+            } else if (shishen.yue === '正印' || shishen.yue === '偏印') {
+                detail += '月柱印星透干，学业优异，适合从事学术研究、教育或稳定的技术工作。';
+            }
+            
+            detail += '<br><br>从五行来看，';
+            if (wuxing['火'] > wuxing['水']) {
+                detail += '您的火元素旺盛，适合从事需要热情和行动力的工作，如销售、公关、演艺等。';
+            } else {
+                detail += '您的水元素相对较强，适合从事需要智慧和谋略的工作，如策划、分析、金融等。';
+            }
+            
+            detail += '<br><br>建议在事业发展中充分发挥自身优势，同时注意补足短板，中年时期将是您事业发展的黄金阶段。';
+            
+            return detail;
+        }
+
+        function getWealthDetail(bazi, wuxing) {
+            const riGan = bazi.r.g;
+            const shishen = {
+                nian: getShishen(bazi.n.g, riGan),
+                yue: getShishen(bazi.y.g, riGan),
+                shi: getShishen(bazi.s.g, riGan)
+            };
+            
+            let detail = '';
+            
+            if (shishen.yue === '正财') {
+                detail += '月柱正财，财运稳定，主要依靠踏实工作获得收入，适合稳健投资。';
+            } else if (shishen.yue === '偏财') {
+                detail += '月柱偏财，财运起伏较大，有机会获得意外之财，但需注意风险控制，不宜过度投机。';
+            } else {
+                detail += '您的财星不显，财运相对平稳，需要通过努力积累财富，不宜急于求成。';
+            }
+            
+            detail += '<br><br>从五行来看，';
+            if (wuxing['土'] > 6) {
+                detail += '土元素旺盛，理财能力较强，善于积累财富，但有时过于保守，错失投资良机。';
+            } else {
+                detail += '土元素稍弱，需要加强理财规划，建议制定详细的财务计划，避免冲动消费。';
+            }
+            
+            detail += '<br><br>建议在财运较好的年份适当投资，但需谨慎选择，避免盲目跟风。偏财年份尤其要注意风险控制。';
+            
+            return detail;
+        }
+
+        function getLoveDetail(bazi, gender) {
+            const riGan = bazi.r.g;
+            const spouse = gender === '男' ? '正财' : '正官';
+            const shishen = {
+                nian: getShishen(bazi.n.g, riGan),
+                yue: getShishen(bazi.y.g, riGan),
+                shi: getShishen(bazi.s.g, riGan)
+            };
+            
+            let detail = '';
+            
+            if (shishen.yue === spouse) {
+                detail += `月柱${spouse}透干，感情运势较好，异性缘佳，婚姻相对稳定。`;
+            } else if (shishen.shi === spouse) {
+                detail += `时柱${spouse}透干，晚年感情生活幸福，与伴侣关系融洽。`;
+            } else {
+                detail += '感情方面需要主动争取，多参加社交活动，扩大交友圈，缘分自会到来。';
+            }
+            
+            detail += '<br><br>从性格来看，';
+            const traits = {
+                '甲': '性格正直，对感情认真负责，但有时过于固执，需要学会变通。',
+                '乙': '性格温和，善于体贴对方，是很好的伴侣，但需要增强主见。',
+                '丙': '性格热情，感情丰富，但有时过于急躁，需要保持冷静。',
+                '丁': '性格细腻，情感丰富，但有时过于敏感，需要信任对方。',
+                '戊': '性格稳重，值得信赖，但有时过于保守，需要增加浪漫。',
+                '己': '性格包容，善于协调，但有时过于迁就，需要保持自我。',
+                '庚': '性格果断，敢爱敢恨，但有时过于刚硬，需要温柔一些。',
+                '辛': '性格精致，注重细节，但有时过于挑剔，需要学会包容。',
+                '壬': '性格灵活，善于交际，但有时过于多变，需要保持专一。',
+                '癸': '性格温柔，富有同情心，但有时过于依赖，需要增强独立。'
+            };
+            detail += traits[riGan];
+            
+            return detail;
+        }
+
+        function getHealthDetail(bazi, wuxing) {
+            const riGan = bazi.r.g;
+            const riWx = WX[riGan];
+            
+            let detail = '';
+            
+            const healthMap = {
+                '木': '木主肝胆，注意保护肝脏和眼睛，避免过度劳累和情绪波动。',
+                '火': '火主心脏，注意心血管健康，避免情绪激动和熬夜。',
+                '土': '土主脾胃，注意饮食规律，避免暴饮暴食和生冷食物。',
+                '金': '金主肺脏，注意呼吸系统健康，避免吸烟和空气污染。',
+                '水': '水主肾脏，注意泌尿系统健康，避免过度饮酒和熬夜。'
+            };
+            
+            detail += `您的日主为${riWx}，${healthMap[riWx]}<br><br>`;
+            
+            if (wuxing['火'] > wuxing['水']) {
+                detail += '火元素过旺，需要注意心脏和血压问题，建议保持平和心态，适当进行舒缓运动。';
+            } else if (wuxing['水'] > wuxing['火']) {
+                detail += '水元素过旺，需要注意肾脏和泌尿系统健康，建议避免熬夜，节制性生活。';
+            }
+            
+            detail += '<br><br>日常养生建议：保持规律作息，饮食均衡，适当运动，保持良好心态。';
+            
+            return detail;
+        }
+
+        function generateDaxun(bazi, gender) {
+            const daxun = [];
+            const birthYear = parseInt(document.getElementById('year').value);
+            const riIdx = TG.indexOf(bazi.r.g);
+            let startIdx = gender === '男' ? riIdx : (riIdx + 5) % 10;
+            
+            for (let i = 0; i < 10; i++) {
+                const g = TG[(startIdx + i * 2) % 10];
+                const z = DZ[(DZ.indexOf(bazi.r.z) + i) % 12];
+                daxun.push({g, z, startYear: birthYear + 10 + i * 10, shishen: getShishen(g, bazi.r.g)});
+            }
+            return daxun;
+        }
+
+        function getForecast(bazi, daxun) {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const birthYear = parseInt(document.getElementById('year').value);
+            const age = currentYear - birthYear;
+            
+            let targetDaxun = null;
+            for (const d of daxun) {
+                if (age >= (d.startYear - birthYear) && age <= (d.startYear - birthYear + 9)) {
+                    targetDaxun = d;
+                    break;
+                }
+            }
+            
+            if (!targetDaxun) targetDaxun = daxun[0];
+            
+            let forecast = `当前您正处于${targetDaxun.g}${targetDaxun.z}大运（${targetDaxun.startYear}-${targetDaxun.startYear+9}），`;
+            forecast += `此大运十神为${targetDaxun.shishen}。<br><br>`;
+            
+            const shishenForecast = {
+                '比肩': '此运人际关系活跃，朋友相助，但竞争压力较大。事业上适合合作发展，财运平稳，不宜盲目投资。感情方面需注意朋友间的相处，避免误会。',
+                '劫财': '此运财运波动较大，易有意外开销，需谨慎理财。感情方面可能出现竞争者，保持平常心对待。事业上需防小人，言行谨慎。',
+                '食神': '此运创造力爆发，适合学习进修、发展兴趣爱好。财运不错，有意外收入可能，把握投资良机。健康方面注意饮食，肠胃易有小疾。',
+                '伤官': '此运思维敏捷，适合创业策划，但需避免锋芒太露。感情方面桃花较旺，已婚者注意保持距离。口舌是非较多，谨言慎行。',
+                '正财': '此运财运亨通，正财收入稳定增长。适合踏实工作，稳步前进。感情方面适合稳定发展，已婚者家庭和睦。',
+                '偏财': '此运偏财运势旺盛，投资有望获利，但需见好就收。人际关系拓展，贵人助力明显。不宜沉迷赌博投机。',
+                '正官': '此运事业运极佳，有晋升机会，把握良机。压力虽大，但能力得以充分展现。感情方面适合稳定发展。',
+                '七杀': '此运挑战重重，但也是机遇之年。勇敢面对困难，贵人相助。注意健康，避免意外发生。',
+                '正印': '此运贵人运旺，学习工作顺利，适合拜师学艺。家庭和睦，有长辈关爱。财运平稳，适合稳健投资。',
+                '偏印': '此运适合研究思考，灵感丰富。注意情绪波动，保持心态平和。可能有意外收获。'
+            };
+            
+            forecast += shishenForecast[targetDaxun.shishen] || '';
+            
+            forecast += '<br><br>未来三年运势：<br><br>';
+            for (let y = currentYear; y < currentYear + 3; y++) {
+                const nianGan = TG[(y - 4) % 10];
+                const nianShishen = getShishen(nianGan, bazi.r.g);
+                forecast += `<strong>${y}年（${nianGan}年）：</strong>`;
+                forecast += shishenForecast[nianShishen] || '平稳发展之年，适合稳扎稳打。';
+                forecast += '<br><br>';
+            }
+            
+            return forecast;
+        }
+
+        function calculate() {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            const day = parseInt(document.getElementById('day').value);
+            const hour = parseInt(document.getElementById('hour').value);
+            const gender = document.querySelector('.gender-option.selected').dataset.gender;
+            
+            const bazi = {
+                n: getNian(year),
+                y: getYue(year, month, day),
+                r: getRi(year, month, day),
+                s: getShi(hour, getRi(year, month, day).g)
+            };
+            
+            const wuxing = calcWuxing(bazi);
+            const qiangruo = judgeQiangruo(bazi, wuxing);
+            const total = Object.values(wuxing).reduce((a,b)=>a+b,0);
+            const balance = calcBalance(wuxing);
+            const yongShen = getYongShen(wuxing, qiangruo);
+            const daxun = generateDaxun(bazi, gender);
+            
+            document.getElementById('bazi-nian').textContent = bazi.n.g + bazi.n.z;
+            document.getElementById('bazi-yue').textContent = bazi.y.g + bazi.y.z;
+            document.getElementById('bazi-ri').textContent = bazi.r.g + bazi.r.z;
+            document.getElementById('bazi-shi').textContent = bazi.s.g + bazi.s.z;
+            
+            document.getElementById('cang-nian').textContent = '藏干：' + ZG[bazi.n.z].join('、');
+            document.getElementById('cang-yue').textContent = '藏干：' + ZG[bazi.y.z].join('、');
+            document.getElementById('cang-ri').textContent = '藏干：' + ZG[bazi.r.z].join('、');
+            document.getElementById('cang-shi').textContent = '藏干：' + ZG[bazi.s.z].join('、');
+            
+            const riGan = bazi.r.g;
+            document.getElementById('shishen-nian').textContent = getShishen(bazi.n.g, riGan);
+            document.getElementById('shishen-yue').textContent = getShishen(bazi.y.g, riGan);
+            document.getElementById('shishen-ri').textContent = getShishen(bazi.r.g, riGan);
+            document.getElementById('shishen-shi').textContent = getShishen(bazi.s.g, riGan);
+            
+            document.getElementById('nayin-nian').textContent = NY[bazi.n.g + bazi.n.z] || '';
+            document.getElementById('nayin-yue').textContent = NY[bazi.y.g + bazi.y.z] || '';
+            document.getElementById('nayin-ri').textContent = NY[bazi.r.g + bazi.r.z] || '';
+            document.getElementById('nayin-shi').textContent = NY[bazi.s.g + bazi.s.z] || '';
+            
+            document.getElementById('wu-mu').style.width = (wuxing.木/total*100)+'%';
+            document.getElementById('wu-huo').style.width = (wuxing.火/total*100)+'%';
+            document.getElementById('wu-tu').style.width = (wuxing.土/total*100)+'%';
+            document.getElementById('wu-jin').style.width = (wuxing.金/total*100)+'%';
+            document.getElementById('wu-shui').style.width = (wuxing.水/total*100)+'%';
+            
+            document.getElementById('mu-val').textContent = wuxing.木;
+            document.getElementById('huo-val').textContent = wuxing.火;
+            document.getElementById('tu-val').textContent = wuxing.土;
+            document.getElementById('jin-val').textContent = wuxing.金;
+            document.getElementById('shui-val').textContent = wuxing.水;
+            
+            document.getElementById('rizhu-qiangruo').textContent = qiangruo;
+            document.getElementById('total-score').textContent = total;
+            document.getElementById('balance-score').textContent = balance + '分';
+            document.getElementById('yong-shen').textContent = yongShen;
+            
+            document.getElementById('shishen-detail').innerHTML = getShishenDetail(bazi);
+            
+            let shishenMeaning = '';
+            const uniqueShishen = [...new Set([getShishen(bazi.n.g, riGan), getShishen(bazi.y.g, riGan), 
+                                               getShishen(bazi.r.g, riGan), getShishen(bazi.s.g, riGan)])];
+            uniqueShishen.forEach(s => {
+                shishenMeaning += `<strong>${s}：</strong>${getShishenMeaning(s)}<br><br>`;
+            });
+            document.getElementById('shishen-meaning').innerHTML = shishenMeaning;
+            
+            document.getElementById('xingge-detail').innerHTML = getXinggeDetail(bazi, wuxing);
+            document.getElementById('career-detail').innerHTML = getCareerDetail(bazi, wuxing);
+            document.getElementById('wealth-detail').innerHTML = getWealthDetail(bazi, wuxing);
+            document.getElementById('love-detail').innerHTML = getLoveDetail(bazi, gender);
+            document.getElementById('health-detail').innerHTML = getHealthDetail(bazi, wuxing);
+            
+            const daxunGrid = document.getElementById('daxun-grid');
+            daxunGrid.innerHTML = '';
+            daxun.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'daxun-item';
+                el.innerHTML = `<div>${item.startYear}-${item.startYear+9}</div><div>${item.g}${item.z}</div><div>${item.shishen}</div>`;
+                daxunGrid.appendChild(el);
+            });
+            
+            document.getElementById('forecast-detail').innerHTML = getForecast(bazi, daxun);
+            
+            document.getElementById('result').style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
