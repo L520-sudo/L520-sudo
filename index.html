@@ -6,65 +6,179 @@
     <title>问真八字 - 生辰八字算命</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; color: #f5f0e6; }
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-        header { text-align: center; padding: 30px 0; }
-        h1 { color: #c9a959; font-size: 2rem; letter-spacing: 8px; }
-        .form-card { background: rgba(45, 45, 68, 0.6); border: 1px solid rgba(201, 169, 89, 0.2); border-radius: 16px; padding: 30px; margin-bottom: 25px; }
-        .form-title { color: #c9a959; text-align: center; margin-bottom: 20px; }
+        body { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #f5f0e6; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; margin-bottom: 25px; }
+        h1 { color: #c9a959; font-size: 1.8rem; letter-spacing: 6px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #c9a959, #d9b969); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .user-name { color: #f5f0e6; }
+        .user-level { padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; }
+        .level-1 { background: #4CAF50; }
+        .level-2 { background: #FF9800; }
+        .level-3 { background: #f44336; }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; }
+        .btn-primary { background: #c9a959; color: #1a1a2e; font-weight: bold; }
+        .btn-primary:hover { background: #d9b969; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #f5f0e6; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        
+        /* Form Card */
+        .form-card { background: rgba(45, 45, 68, 0.7); border: 1px solid rgba(201, 169, 89, 0.2); border-radius: 20px; padding: 35px; margin-bottom: 25px; backdrop-filter: blur(10px); }
+        .form-title { color: #c9a959; text-align: center; margin-bottom: 25px; font-size: 1.3rem; }
         .form-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; min-width: 120px; }
-        .form-group label { display: block; color: #c9a959; margin-bottom: 8px; }
-        .form-group select { width: 100%; padding: 10px; background: rgba(26, 26, 46, 0.8); border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 8px; color: #f5f0e6; }
+        .form-group label { display: block; color: #c9a959; margin-bottom: 8px; font-size: 0.9rem; }
+        .form-group select, .form-group input { width: 100%; padding: 12px; background: rgba(26, 26, 46, 0.8); border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 10px; color: #f5f0e6; font-size: 0.9rem; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #c9a959; }
         .gender-group { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
-        .gender-option { padding: 10px 30px; border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 8px; cursor: pointer; }
-        .gender-option.selected { background: rgba(201, 169, 89, 0.15); }
-        .submit-btn { width: 100%; max-width: 200px; margin: 0 auto; display: block; padding: 12px; background: #c9a959; color: #1a1a2e; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .gender-option { padding: 12px 35px; border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        .gender-option.selected { background: rgba(201, 169, 89, 0.2); border-color: #c9a959; }
+        .submit-btn { width: 100%; max-width: 220px; margin: 20px auto; display: block; padding: 14px; background: linear-gradient(135deg, #c9a959, #d9b969); color: #1a1a2e; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.3s; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(201, 169, 89, 0.3); }
         
-        .result-card { background: rgba(45, 45, 68, 0.6); border: 1px solid rgba(201, 169, 89, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px; }
-        .section-title { color: #c9a959; text-align: center; margin-bottom: 20px; font-size: 1.3rem; }
+        /* Result Card */
+        .result-card { background: rgba(45, 45, 68, 0.7); border: 1px solid rgba(201, 169, 89, 0.2); border-radius: 20px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(10px); }
+        .section-title { color: #c9a959; text-align: center; margin-bottom: 20px; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .section-title::before, .section-title::after { content: ''; width: 30px; height: 1px; background: rgba(201, 169, 89, 0.3); }
         
+        /* Bazi Display */
         .bazi-row { display: flex; justify-content: space-around; margin-bottom: 20px; }
-        .bazi-item { text-align: center; min-width: 100px; }
-        .bazi-label { color: #c9a959; font-size: 0.8rem; }
-        .bazi-ganzhi { font-size: 1.8rem; margin: 10px 0; color: #c9a959; }
+        .bazi-item { text-align: center; min-width: 100px; background: rgba(26, 26, 46, 0.6); padding: 15px; border-radius: 12px; }
+        .bazi-label { color: #c9a959; font-size: 0.8rem; margin-bottom: 8px; }
+        .bazi-ganzhi { font-size: 1.8rem; margin: 10px 0; color: #c9a959; font-weight: bold; }
         .bazi-canggan { font-size: 0.8rem; opacity: 0.7; }
         
+        /* Wuxing Section */
         .wuxing-section { margin-bottom: 20px; }
-        .wuxing-bar { height: 25px; background: rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 10px; position: relative; }
-        .wuxing-fill { height: 100%; border-radius: 12px; }
-        .wuxing-text { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: #c9a959; }
+        .wuxing-bar-container { margin-bottom: 15px; }
+        .wuxing-bar-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .wuxing-bar-header span { color: #c9a959; font-size: 0.9rem; }
+        .wuxing-bar { height: 28px; background: rgba(255,255,255,0.1); border-radius: 14px; overflow: hidden; position: relative; }
+        .wuxing-fill { height: 100%; border-radius: 14px; transition: width 0.5s ease; }
+        .wuxing-text { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: #c9a959; font-weight: bold; }
         .mu { background: linear-gradient(90deg, #4a7c59, #5a8c69); }
         .huo { background: linear-gradient(90deg, #a63d40, #b64d50); }
         .tu { background: linear-gradient(90deg, #c9a959, #d9b969); }
         .jin { background: linear-gradient(90deg, #8a8a8a, #9a9a9a); }
         .shui { background: linear-gradient(90deg, #4a6a8a, #5a7a9a); }
         
+        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-item { background: rgba(26, 26, 46, 0.8); padding: 15px; border-radius: 10px; text-align: center; }
-        .stat-label { color: #c9a959; font-size: 0.9rem; }
-        .stat-value { font-size: 1.5rem; margin-top: 5px; }
+        .stat-item { background: rgba(26, 26, 46, 0.8); padding: 20px; border-radius: 12px; text-align: center; }
+        .stat-label { color: #c9a959; font-size: 0.9rem; margin-bottom: 8px; }
+        .stat-value { font-size: 1.6rem; font-weight: bold; }
         
-        .daxun-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-        .daxun-item { background: rgba(26, 26, 46, 0.8); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .daxun-item:hover { background: rgba(201, 169, 89, 0.2); }
+        /* Daxun Grid */
+        .daxun-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+        .daxun-item { background: rgba(26, 26, 46, 0.8); padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .daxun-item:hover { background: rgba(201, 169, 89, 0.2); transform: translateY(-3px); }
         .daxun-item.active { background: rgba(201, 169, 89, 0.3); }
         
+        /* Interpretation Sections */
         .interp-section { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(201, 169, 89, 0.1); }
-        .interp-title { color: #c9a959; font-size: 1.1rem; margin-bottom: 12px; }
-        .interp-content { line-height: 1.9; text-indent: 2em; }
+        .interp-title { color: #c9a959; font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .interp-title::before { content: '◆'; font-size: 0.8rem; }
+        .interp-content { line-height: 1.9; text-indent: 2em; color: #e8e4dc; }
         
+        /* Table */
         .shishen-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .shishen-table th, .shishen-table td { padding: 10px; text-align: center; border: 1px solid rgba(201, 169, 89, 0.1); }
-        .shishen-table th { color: #c9a959; }
+        .shishen-table th, .shishen-table td { padding: 12px; text-align: center; border: 1px solid rgba(201, 169, 89, 0.1); }
+        .shishen-table th { color: #c9a959; background: rgba(26, 26, 46, 0.5); }
         
-        footer { text-align: center; padding: 20px; opacity: 0.5; }
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: linear-gradient(135deg, #2d2d44, #1a1a2e); border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 20px; padding: 30px; width: 90%; max-width: 450px; }
+        .modal-title { color: #c9a959; font-size: 1.3rem; margin-bottom: 20px; text-align: center; }
+        .modal-form { display: flex; flex-direction: column; gap: 15px; }
+        .modal-form input { padding: 12px; background: rgba(26, 26, 46, 0.8); border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 10px; color: #f5f0e6; font-size: 0.9rem; }
+        .modal-form input:focus { outline: none; border-color: #c9a959; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-actions .btn { flex: 1; }
+        
+        /* Admin Panel */
+        .admin-panel { background: rgba(244, 67, 54, 0.1); border: 1px solid rgba(244, 67, 54, 0.3); }
+        .admin-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .user-list { max-height: 200px; overflow-y: auto; }
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(26, 26, 46, 0.6); border-radius: 8px; margin-bottom: 8px; }
+        .user-item:last-child { margin-bottom: 0; }
+        .user-name-admin { font-weight: bold; }
+        .user-level-admin { font-size: 0.8rem; padding: 2px 6px; border-radius: 8px; }
+        .user-actions { display: flex; gap: 8px; }
+        .admin-btn { padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; }
+        .admin-btn.up { background: #4CAF50; color: white; }
+        .admin-btn.down { background: #FF9800; color: white; }
+        .admin-btn.delete { background: #f44336; color: white; }
+        
+        /* Search History */
+        .search-history-list { max-height: 250px; overflow-y: auto; }
+        .search-item { padding: 12px; background: rgba(26, 26, 46, 0.6); border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem; }
+        .search-item:last-child { margin-bottom: 0; }
+        .search-meta { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.7; margin-top: 5px; }
+        
+        /* Footer */
+        footer { text-align: center; padding: 30px; opacity: 0.5; font-size: 0.9rem; }
+        
+        /* Level Info */
+        .level-info { background: rgba(201, 169, 89, 0.1); border: 1px solid rgba(201, 169, 89, 0.2); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+        .level-info-title { color: #c9a959; font-weight: bold; margin-bottom: 10px; }
+        .level-info-content { font-size: 0.9rem; line-height: 1.6; }
+        
+        /* Social Login */
+        .social-login { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+        .social-btn { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; }
+        .social-btn.wechat { background: #07c160; color: white; }
+        .social-btn.wechat:hover { background: #06ad56; }
+        .social-btn.qq { background: #12b7f5; color: white; }
+        .social-btn.qq:hover { background: #0da5e0; }
+        .social-icon { font-size: 1.2rem; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 15px; }
+            .form-row { flex-direction: column; }
+            .daxun-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: 1fr; }
+            .bazi-row { flex-wrap: wrap; gap: 10px; }
+            .bazi-item { flex: 1; min-width: 45%; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <header><h1>问真八字</h1></header>
-        
+        <header>
+            <h1>问真八字</h1>
+            <div class="header-right">
+                <div class="user-info" id="user-info" style="display: none;">
+                    <div class="user-avatar" id="user-avatar">?</div>
+                    <div>
+                        <div class="user-name" id="user-name"></div>
+                        <div class="user-level" id="user-level"></div>
+                    </div>
+                </div>
+                <div id="auth-buttons">
+                    <button class="social-btn wechat" onclick="socialLogin('wechat')">
+                        <span class="social-icon">💬</span> 微信登录
+                    </button>
+                    <button class="social-btn qq" onclick="socialLogin('qq')">
+                        <span class="social-icon">💬</span> QQ登录
+                    </button>
+                    <button class="btn btn-secondary" onclick="showLogin()">管理员登录</button>
+                </div>
+                <button class="btn btn-secondary" id="logout-btn" style="display: none;" onclick="logout()">退出</button>
+            </div>
+        </header>
+
+        <div id="level-info" class="level-info" style="display: none;">
+            <div class="level-info-title" id="level-title"></div>
+            <div class="level-info-content" id="level-content"></div>
+        </div>
+
         <div class="form-card">
             <div class="form-title">输入出生信息</div>
             <div class="form-row">
@@ -102,11 +216,11 @@
             <div class="result-card">
                 <div class="section-title">五行分析</div>
                 <div class="wuxing-section">
-                    <div><span>木:</span><div class="wuxing-bar"><div class="wuxing-fill mu" id="wu-mu"></div><div class="wuxing-text" id="mu-val"></div></div></div>
-                    <div><span>火:</span><div class="wuxing-bar"><div class="wuxing-fill huo" id="wu-huo"></div><div class="wuxing-text" id="huo-val"></div></div></div>
-                    <div><span>土:</span><div class="wuxing-bar"><div class="wuxing-fill tu" id="wu-tu"></div><div class="wuxing-text" id="tu-val"></div></div></div>
-                    <div><span>金:</span><div class="wuxing-bar"><div class="wuxing-fill jin" id="wu-jin"></div><div class="wuxing-text" id="jin-val"></div></div></div>
-                    <div><span>水:</span><div class="wuxing-bar"><div class="wuxing-fill shui" id="wu-shui"></div><div class="wuxing-text" id="shui-val"></div></div></div>
+                    <div class="wuxing-bar-container"><div class="wuxing-bar-header"><span>木</span><span id="mu-score"></span></div><div class="wuxing-bar"><div class="wuxing-fill mu" id="wu-mu"></div><div class="wuxing-text" id="mu-val"></div></div></div>
+                    <div class="wuxing-bar-container"><div class="wuxing-bar-header"><span>火</span><span id="huo-score"></span></div><div class="wuxing-bar"><div class="wuxing-fill huo" id="wu-huo"></div><div class="wuxing-text" id="huo-val"></div></div></div>
+                    <div class="wuxing-bar-container"><div class="wuxing-bar-header"><span>土</span><span id="tu-score"></span></div><div class="wuxing-bar"><div class="wuxing-fill tu" id="wu-tu"></div><div class="wuxing-text" id="tu-val"></div></div></div>
+                    <div class="wuxing-bar-container"><div class="wuxing-bar-header"><span>金</span><span id="jin-score"></span></div><div class="wuxing-bar"><div class="wuxing-fill jin" id="wu-jin"></div><div class="wuxing-text" id="jin-val"></div></div></div>
+                    <div class="wuxing-bar-container"><div class="wuxing-bar-header"><span>水</span><span id="shui-score"></span></div><div class="wuxing-bar"><div class="wuxing-fill shui" id="wu-shui"></div><div class="wuxing-text" id="shui-val"></div></div></div>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-item"><div class="stat-label">日主强弱</div><div class="stat-value" id="rizhu-qiangruo">--</div></div>
@@ -168,10 +282,40 @@
             </div>
         </div>
 
+        <div id="admin-panel" class="result-card admin-panel" style="display: none;">
+            <div class="section-title">管理员面板</div>
+            <div class="admin-section">
+                <h3 style="color: #c9a959; margin-bottom: 15px;">用户管理</h3>
+                <div class="user-list" id="user-list"></div>
+            </div>
+            <div class="admin-section">
+                <h3 style="color: #c9a959; margin-bottom: 15px;">搜索记录</h3>
+                <div class="search-history-list" id="search-history"></div>
+            </div>
+        </div>
+
         <footer>问真八字 · 仅供娱乐参考</footer>
     </div>
 
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal">
+            <div class="modal-title">管理员登录</div>
+            <div class="modal-form">
+                <input type="text" id="login-username" placeholder="用户名">
+                <input type="password" id="login-password" placeholder="密码">
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="hideLogin()">取消</button>
+                    <button class="btn btn-primary" onclick="login()">登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <script>
+        // 八字数据
         const TG = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
         const DZ = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
         const WX = {'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水',
@@ -189,7 +333,32 @@
                    '壬子':'桑柘木','癸丑':'桑柘木','甲寅':'大溪水','乙卯':'大溪水','丙辰':'沙中土','丁巳':'沙中土',
                    '戊午':'天上火','己未':'天上火','庚申':'石榴木','辛酉':'石榴木','壬戌':'大海水','癸亥':'大海水'};
 
+        // 用户等级配置
+        const levelConfig = {
+            1: { name: '普通用户', color: 'level-1', maxWords: 1000000, description: '可查看100万字完整命理解读' },
+            2: { name: 'VIP用户', color: 'level-2', maxWords: 1000, description: '可查看1000字基础命理解读' },
+            3: { name: '管理员', color: 'level-3', maxWords: 1000000, description: '可查看完整解读+用户管理权限' }
+        };
+
+        // 初始化用户数据
+        function initUsers() {
+            if (!localStorage.getItem('users')) {
+                const defaultUsers = [
+                    { id: 1, username: 'admin', password: 'admin123', level: 3 }
+                ];
+                localStorage.setItem('users', JSON.stringify(defaultUsers));
+            }
+            if (!localStorage.getItem('searchHistory')) {
+                localStorage.setItem('searchHistory', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('socialUsers')) {
+                localStorage.setItem('socialUsers', JSON.stringify([]));
+            }
+        }
+
+        // 初始化表单
         function init() {
+            initUsers();
             const year = document.getElementById('year');
             const month = document.getElementById('month');
             const day = document.getElementById('day');
@@ -202,8 +371,243 @@
             for (let d = 1; d <= 31; d++) day.add(new Option(d+'日', d));
             for (let h = 0; h < 24; h++) hour.add(new Option(h+'时', h));
             for (let m = 0; m < 60; m += 5) minute.add(new Option(m+'分', m));
+            
+            // 检查是否已登录
+            checkLogin();
         }
 
+        // 用户认证
+        function checkLogin() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                document.getElementById('auth-buttons').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'block';
+                document.getElementById('user-info').style.display = 'flex';
+                document.getElementById('user-avatar').textContent = user.username.charAt(0).toUpperCase();
+                document.getElementById('user-name').textContent = user.username;
+                const level = levelConfig[user.level];
+                document.getElementById('user-level').textContent = level.name;
+                document.getElementById('user-level').className = 'user-level ' + level.color;
+                showLevelInfo(user.level);
+                if (user.level === 3) {
+                    document.getElementById('admin-panel').style.display = 'block';
+                    loadUserList();
+                    loadSearchHistory();
+                } else {
+                    document.getElementById('admin-panel').style.display = 'none';
+                }
+            } else {
+                document.getElementById('auth-buttons').style.display = 'flex';
+                document.getElementById('logout-btn').style.display = 'none';
+                document.getElementById('user-info').style.display = 'none';
+                document.getElementById('level-info').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'none';
+            }
+        }
+
+        function showLevelInfo(level) {
+            document.getElementById('level-info').style.display = 'block';
+            document.getElementById('level-title').textContent = '当前身份：' + levelConfig[level].name;
+            document.getElementById('level-content').textContent = levelConfig[level].description;
+        }
+
+        function showLogin() {
+            document.getElementById('login-modal').classList.add('show');
+        }
+
+        function hideLogin() {
+            document.getElementById('login-modal').classList.remove('show');
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                hideLogin();
+                checkLogin();
+                alert('登录成功！');
+            } else {
+                alert('用户名或密码错误');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            checkLogin();
+            document.getElementById('result').style.display = 'none';
+            alert('已退出登录');
+        }
+
+        // 社交登录（微信/QQ）
+        function socialLogin(type) {
+            // 生成随机用户ID模拟社交登录
+            const randomId = Date.now() + Math.random().toString(36).substr(2, 9);
+            const userName = type === 'wechat' ? '微信用户' : 'QQ用户';
+            const displayName = userName + randomId.substring(randomId.length - 6);
+            
+            // 获取社交用户列表
+            const socialUsers = JSON.parse(localStorage.getItem('socialUsers'));
+            
+            // 检查社交用户总数
+            const totalSocialCount = socialUsers.length;
+            
+            // 前1000个社交用户为VIP（等级2），之后为普通用户（等级1）
+            // 一级用户：1000000个，二级用户：1000个
+            let userLevel = 2; // 默认VIP用户
+            if (totalSocialCount >= 1000) {
+                userLevel = 1; // 超过1000个后为普通用户
+            }
+            
+            // 创建社交用户
+            const socialUser = {
+                id: randomId,
+                username: displayName,
+                type: type,
+                level: userLevel,
+                loginTime: new Date().toLocaleString('zh-CN')
+            };
+            
+            // 保存用户
+            socialUsers.push(socialUser);
+            localStorage.setItem('socialUsers', JSON.stringify(socialUsers));
+            
+            // 设置当前用户
+            localStorage.setItem('currentUser', JSON.stringify(socialUser));
+            checkLogin();
+            
+            alert(`${userName}登录成功！\n您的用户等级：${levelConfig[userLevel].name}`);
+        }
+
+        // 管理员功能
+        function loadUserList() {
+            const users = JSON.parse(localStorage.getItem('users'));
+            const socialUsers = JSON.parse(localStorage.getItem('socialUsers'));
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';
+            
+            // 显示管理员用户
+            users.forEach(user => {
+                const level = levelConfig[user.level];
+                const item = document.createElement('div');
+                item.className = 'user-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="user-name-admin">${user.username} (管理员账号)</div>
+                        <div class="user-level-admin ${level.color}">${level.name}</div>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn admin-btn up" onclick="updateUserLevel(${user.id}, ${Math.min(3, user.level + 1)}, 'admin')">升级</button>
+                        <button class="btn admin-btn down" onclick="updateUserLevel(${user.id}, ${Math.max(1, user.level - 1)}, 'admin')">降级</button>
+                        <button class="btn admin-btn delete" onclick="deleteUser(${user.id}, 'admin')">删除</button>
+                    </div>
+                `;
+                userList.appendChild(item);
+            });
+            
+            // 显示社交用户
+            socialUsers.forEach(user => {
+                const level = levelConfig[user.level];
+                const item = document.createElement('div');
+                item.className = 'user-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="user-name-admin">${user.username} (${user.type === 'wechat' ? '微信' : 'QQ'})</div>
+                        <div class="user-level-admin ${level.color}">${level.name}</div>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn admin-btn up" onclick="updateUserLevel('${user.id}', ${Math.min(3, user.level + 1)}, 'social')">升级</button>
+                        <button class="btn admin-btn down" onclick="updateUserLevel('${user.id}', ${Math.max(1, user.level - 1)}, 'social')">降级</button>
+                        <button class="btn admin-btn delete" onclick="deleteUser('${user.id}', 'social')">删除</button>
+                    </div>
+                `;
+                userList.appendChild(item);
+            });
+        }
+
+        function updateUserLevel(userId, newLevel, type) {
+            if (type === 'admin') {
+                const users = JSON.parse(localStorage.getItem('users'));
+                const user = users.find(u => u.id === userId);
+                if (user) {
+                    user.level = newLevel;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    loadUserList();
+                    alert(`用户 ${user.username} 已${newLevel > user.level ? '升级' : '降级'}为${levelConfig[newLevel].name}`);
+                }
+            } else {
+                const socialUsers = JSON.parse(localStorage.getItem('socialUsers'));
+                const user = socialUsers.find(u => u.id === userId);
+                if (user) {
+                    user.level = newLevel;
+                    localStorage.setItem('socialUsers', JSON.stringify(socialUsers));
+                    loadUserList();
+                    alert(`用户 ${user.username} 已${newLevel > user.level ? '升级' : '降级'}为${levelConfig[newLevel].name}`);
+                }
+            }
+        }
+
+        function deleteUser(userId, type) {
+            if (confirm('确定要删除该用户吗？')) {
+                if (type === 'admin') {
+                    const users = JSON.parse(localStorage.getItem('users')).filter(u => u.id !== userId);
+                    localStorage.setItem('users', JSON.stringify(users));
+                } else {
+                    const socialUsers = JSON.parse(localStorage.getItem('socialUsers')).filter(u => u.id !== userId);
+                    localStorage.setItem('socialUsers', JSON.stringify(socialUsers));
+                }
+                loadUserList();
+                alert('用户已删除');
+            }
+        }
+
+        function loadSearchHistory() {
+            const history = JSON.parse(localStorage.getItem('searchHistory'));
+            const historyList = document.getElementById('search-history');
+            historyList.innerHTML = '';
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; opacity: 0.5;">暂无搜索记录</div>';
+                return;
+            }
+            
+            history.reverse().forEach(record => {
+                const item = document.createElement('div');
+                item.className = 'search-item';
+                item.innerHTML = `
+                    <div>${record.bazi}</div>
+                    <div class="search-meta">
+                        <span>用户: ${record.username}</span>
+                        <span>${record.time}</span>
+                    </div>
+                `;
+                historyList.appendChild(item);
+            });
+        }
+
+        // 添加搜索记录
+        function addSearchRecord(bazi) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const history = JSON.parse(localStorage.getItem('searchHistory'));
+            history.push({
+                id: Date.now(),
+                bazi: bazi,
+                username: user ? user.username : '游客',
+                time: new Date().toLocaleString('zh-CN')
+            });
+            localStorage.setItem('searchHistory', JSON.stringify(history));
+            
+            // 如果是管理员，刷新记录列表
+            if (user && user.level === 3) {
+                loadSearchHistory();
+            }
+        }
+
+        // 八字计算
         function selectGender(el) {
             document.querySelectorAll('.gender-option').forEach(o => o.classList.remove('selected'));
             el.classList.add('selected');
@@ -292,6 +696,30 @@
             return '五行平衡，用神灵活';
         }
 
+        // 根据用户等级限制字数
+        function truncateText(text, maxWords) {
+            const words = text.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, '').split('');
+            if (words.length <= maxWords) return text;
+            
+            let htmlLength = 0;
+            let result = '';
+            const textArray = text.split('');
+            
+            for (let i = 0; i < textArray.length && htmlLength < maxWords; i++) {
+                if (textArray[i] === '<') {
+                    let tagEnd = text.indexOf('>', i);
+                    result += text.substring(i, tagEnd + 1);
+                    i = tagEnd;
+                } else {
+                    result += textArray[i];
+                    htmlLength++;
+                }
+            }
+            
+            return result + '...<br><br><strong style="color: #c9a959;">升级VIP可查看完整解读</strong>';
+        }
+
+        // 详细命理解读内容（超过10000字）
         function getShishenDetail(bazi) {
             const riGan = bazi.r.g;
             const shishenList = {
@@ -304,8 +732,42 @@
             const counts = {};
             Object.values(shishenList).forEach(s => { counts[s] = (counts[s] || 0) + 1; });
             
-            let detail = `您的八字十神分布为：年柱${shishenList.nian}、月柱${shishenList.yue}、日柱${shishenList.ri}、时柱${shishenList.shi}。`;
-            detail += '<br><br>十神数量统计：';
+            let detail = `您的八字十神分布为：年柱${shishenList.nian}、月柱${shishenList.yue}、日柱${shishenList.shi}。十神是八字命理学中分析人与人、事、物关系的重要工具，每个十神代表不同的人际关系和人生际遇。<br><br>`;
+            
+            detail += `年柱代表您的出生背景和早年运势，${shishenList.nian}在年柱意味着${shishenList.nian === '正印' ? '家庭环境较好，父母对您影响深远' : 
+                       shishenList.nian === '偏印' ? '思维独特，与父母缘分较薄' : 
+                       shishenList.nian === '正官' ? '出生于有规矩的家庭，早年有责任感' :
+                       shishenList.nian === '七杀' ? '性格刚强，早年经历较多挑战' :
+                       shishenList.nian === '正财' ? '家庭经济条件不错，注重物质' :
+                       shishenList.nian === '偏财' ? '家庭有意外之财，父亲能力强' :
+                       shishenList.nian === '食神' ? '家庭氛围轻松，从小聪慧' :
+                       shishenList.nian === '伤官' ? '思维活跃，与传统观念有冲突' :
+                       shishenList.nian === '比肩' ? '兄弟姐妹较多，早年朋友缘好' :
+                       '兄弟姐妹竞争压力较大'}。<br><br>`;
+            
+            detail += `月柱代表您的青年时期和事业发展，${shishenList.yue}在月柱表明您${shishenList.yue === '正官' ? '事业心强，适合管理岗位' :
+                       shishenList.yue === '七杀' ? '能力出众，敢于迎接挑战' :
+                       shishenList.yue === '正印' ? '学业优秀，贵人相助' :
+                       shishenList.yue === '偏印' ? '适合研究思考，直觉敏锐' :
+                       shishenList.yue === '正财' ? '理财能力强，财运稳定' :
+                       shishenList.yue === '偏财' ? '有投资眼光，财运起伏大' :
+                       shishenList.yue === '食神' ? '创造力强，适合艺术领域' :
+                       shishenList.yue === '伤官' ? '才华横溢，需防口舌是非' :
+                       shishenList.yue === '比肩' ? '朋友相助，但竞争激烈' :
+                       '行动力强，需防意外开销'}。<br><br>`;
+            
+            detail += `时柱代表您的晚年运势和子女情况，${shishenList.shi}在时柱预示您${shishenList.shi === '食神' ? '晚年生活富足，子女孝顺' :
+                       shishenList.shi === '伤官' ? '晚年仍有创造力，子女独立' :
+                       shishenList.shi === '正官' ? '晚年地位尊崇，受人尊敬' :
+                       shishenList.shi === '七杀' ? '晚年仍有魄力，事业延续' :
+                       shishenList.shi === '正财' ? '晚年财运稳定，物质充足' :
+                       shishenList.shi === '偏财' ? '晚年有意外收入' :
+                       shishenList.shi === '正印' ? '晚年有贵人照料，福寿双全' :
+                       shishenList.shi === '偏印' ? '晚年喜欢独处，精神富足' :
+                       shishenList.shi === '比肩' ? '晚年朋友众多，社交丰富' :
+                       '晚年需注意理财，子女可能远离'}。<br><br>`;
+            
+            detail += '十神数量统计：';
             for (const [name, count] of Object.entries(counts)) {
                 detail += `${name}${count}个，`;
             }
@@ -316,16 +778,16 @@
 
         function getShishenMeaning(shishen) {
             const meanings = {
-                '比肩': '比肩代表朋友、同辈、竞争。比肩多者性格开朗，朋友众多，但也容易有竞争压力，理财需谨慎，避免钱财流失。',
-                '劫财': '劫财代表兄弟姐妹、竞争者、意外开销。劫财旺者行动力强，但容易冲动消费，感情方面可能有第三者介入。',
-                '食神': '食神代表智慧、创造力、享受。食神旺者聪明才智出众，艺术天赋高，财运不错，适合文化艺术领域发展。',
-                '伤官': '伤官代表才华、叛逆、创造力。伤官旺者思维敏捷，敢于创新，但需注意口舌是非，避免锋芒太露。',
-                '正财': '正财代表正业收入、稳定财源、妻子。正财旺者财运稳定，适合踏实工作，家庭观念强。',
-                '偏财': '偏财代表意外之财、投资收益、父亲。偏财旺者财运起伏大，适合投资理财，但需注意风险控制。',
-                '正官': '正官代表事业、地位、上司、丈夫。正官旺者事业心强，有领导才能，适合公职或管理岗位。',
-                '七杀': '七杀代表挑战、权威、魄力。七杀旺者能力出众，但性格急躁，需注意人际关系和健康问题。',
-                '正印': '正印代表学业、贵人、母亲。正印旺者学业优异，贵人相助，适合学术研究或稳定工作。',
-                '偏印': '偏印代表智慧、孤独、直觉。偏印旺者思维独特，适合研究思考，但需注意情绪管理。'
+                '比肩': '比肩代表朋友、同辈、竞争。比肩多者性格开朗，朋友众多，但也容易有竞争压力，理财需谨慎，避免钱财流失。比肩之人乐于助人，重情重义，但有时过于自我，需要学会倾听他人意见。在事业上，比肩代表合作伙伴和竞争对手，既有助力也有阻力。',
+                '劫财': '劫财代表兄弟姐妹、竞争者、意外开销。劫财旺者行动力强，敢于冒险，但容易冲动消费，感情方面可能有第三者介入。劫财之人性格豪爽，讲义气，但有时过于冲动，需要学会冷静思考。在财运上，劫财代表不稳定的收入和意外支出，需要加强财务管理。',
+                '食神': '食神代表智慧、创造力、享受。食神旺者聪明才智出众，艺术天赋高，财运不错，适合文化艺术领域发展。食神之人乐观开朗，善于享受生活，但有时过于懒散，缺乏进取心。在事业上，食神代表才华和创造力，适合创意类工作。',
+                '伤官': '伤官代表才华、叛逆、创造力。伤官旺者思维敏捷，敢于创新，但需注意口舌是非，避免锋芒太露。伤官之人聪明绝顶，见解独到，但有时过于自负，需要学会谦虚。在事业上，伤官代表突破性的创意和才华，但也可能带来人际关系的挑战。',
+                '正财': '正财代表正业收入、稳定财源、妻子。正财旺者财运稳定，适合踏实工作，家庭观念强。正财之人务实稳重，重视家庭，但有时过于保守，缺乏冒险精神。在事业上，正财代表稳定的工作收入和职业发展。',
+                '偏财': '偏财代表意外之财、投资收益、父亲。偏财旺者财运起伏大，适合投资理财，但需注意风险控制。偏财之人善于把握机会，财运亨通，但有时过于投机，需要谨慎行事。在事业上，偏财代表商业机会和投资收益。',
+                '正官': '正官代表事业、地位、上司、丈夫。正官旺者事业心强，有领导才能，适合公职或管理岗位。正官之人责任心强，处事公正，但有时过于刻板，缺乏变通。在事业上，正官代表权力和地位，适合管理岗位。',
+                '七杀': '七杀代表挑战、权威、魄力。七杀旺者能力出众，但性格急躁，需注意人际关系和健康问题。七杀之人果断勇敢，敢于担当，但有时过于刚硬，需要学会柔化。在事业上，七杀代表竞争和挑战，适合需要魄力的工作。',
+                '正印': '正印代表学业、贵人、母亲。正印旺者学业优异，贵人相助，适合学术研究或稳定工作。正印之人心地善良，乐于助人，但有时过于依赖他人，需要培养独立性。在事业上，正印代表贵人相助和稳定的发展。',
+                '偏印': '偏印代表智慧、孤独、直觉。偏印旺者思维独特，适合研究思考，但需注意情绪管理。偏印之人聪明睿智，见解独到，但有时过于孤僻，需要加强社交。在事业上，偏印代表特殊的才华和非传统的成功路径。'
             };
             return meanings[shishen] || '';
         }
@@ -335,27 +797,43 @@
             const riWx = WX[riGan];
             
             const ganTraits = {
-                '甲': '甲木日主，如参天大树，性格正直、有担当，上进心强，富有领导才能，但有时过于固执。',
-                '乙': '乙木日主，如花草藤蔓，性格温和、灵活变通，富有艺术天赋，善于协调人际关系。',
-                '丙': '丙火日主，如太阳之火，性格热情开朗、积极主动，社交能力强，但有时过于急躁。',
-                '丁': '丁火日主，如灯火之火，性格细腻内敛、内心丰富，富有创意，注重细节。',
-                '戊': '戊土日主，如高山厚土，性格稳重踏实、诚实守信，做事持之以恒，但有时过于保守。',
-                '己': '己土日主，如田园之土，性格谦逊包容、善于协调，富有耐心，适合团队合作。',
-                '庚': '庚金日主，如刀斧之金，性格刚毅果断、正义感强，做事干脆利落，但有时过于刚硬。',
-                '辛': '辛金日主，如珠玉之金，性格精致敏锐、追求完美，审美能力强，注重品质。',
-                '壬': '壬水日主，如江海之水，性格聪明灵活、思维敏捷，适应力强，但有时过于多变。',
-                '癸': '癸水日主，如雨露之水，性格柔和内敛、情感细腻，想象力丰富，直觉敏锐。'
+                '甲': '甲木日主，如参天大树，性格正直、有担当，上进心强，富有领导才能，但有时过于固执。甲木之人胸怀宽广，志向远大，具有不屈不挠的精神。您就像一棵参天大树，能够为他人遮风挡雨，是值得信赖的朋友和领导者。但有时过于坚持己见，需要学会变通和听取他人意见。',
+                '乙': '乙木日主，如花草藤蔓，性格温和、灵活变通，富有艺术天赋，善于协调人际关系。乙木之人温柔体贴，善解人意，具有很强的适应能力。您就像藤蔓一样，能够灵活适应各种环境，善于与人相处。但有时过于柔顺，需要增强主见和决断力。',
+                '丙': '丙火日主，如太阳之火，性格热情开朗、积极主动，社交能力强，但有时过于急躁。丙火之人充满活力，热情洋溢，具有很强的感染力。您就像太阳一样，能够照亮周围的人，给人带来温暖和希望。但有时过于急躁冲动，需要学会冷静和耐心。',
+                '丁': '丁火日主，如灯火之火，性格细腻内敛、内心丰富，富有创意，注重细节。丁火之人心思缜密，情感丰富，具有很强的创造力。您就像一盏明灯，虽然光芒不如太阳耀眼，但却能照亮黑暗中的角落，温暖人心。但有时过于敏感，需要学会信任和放松。',
+                '戊': '戊土日主，如高山厚土，性格稳重踏实、诚实守信，做事持之以恒，但有时过于保守。戊土之人稳重可靠，诚实守信，具有很强的责任感。您就像高山一样，让人感到安心和信赖。但有时过于保守，需要学会接受新事物和变化。',
+                '己': '己土日主，如田园之土，性格谦逊包容、善于协调，富有耐心，适合团队合作。己土之人温和谦逊，善于协调各方关系，具有很强的亲和力。您就像肥沃的土壤，能够滋养万物，促进团队和谐。但有时过于迁就他人，需要保持自我。',
+                '庚': '庚金日主，如刀斧之金，性格刚毅果断、正义感强，做事干脆利落，但有时过于刚硬。庚金之人刚毅果断，正直勇敢，具有很强的执行力。您就像一把锋利的宝剑，能够斩断困难，勇往直前。但有时过于刚硬，需要学会柔和和变通。',
+                '辛': '辛金日主，如珠玉之金，性格精致敏锐、追求完美，审美能力强，注重品质。辛金之人精致优雅，追求完美，具有很强的审美能力。您就像一颗璀璨的明珠，光芒四射，独具魅力。但有时过于挑剔，需要学会包容和接纳。',
+                '壬': '壬水日主，如江海之水，性格聪明灵活、思维敏捷，适应力强，但有时过于多变。壬水之人聪明睿智，思维敏捷，具有很强的适应能力。您就像大海一样，包容万象，充满智慧。但有时过于多变，需要保持专注和坚持。',
+                '癸': '癸水日主，如雨露之水，性格柔和内敛、情感细腻，想象力丰富，直觉敏锐。癸水之人温柔细腻，情感丰富，具有很强的直觉力。您就像春雨一样，润物无声，善解人意。但有时过于依赖，需要增强独立和自信。'
             };
             
             let detail = ganTraits[riGan] + '<br><br>';
             
+            detail += '五行对您性格的影响：<br>';
+            const sortedWuxing = Object.entries(wuxing).sort((a, b) => b[1] - a[1]);
+            const strongest = sortedWuxing[0];
+            const weakest = sortedWuxing[4];
+            
+            detail += `您最强的五行是${strongest[0]}(${strongest[1]}分)，这使您具有${strongest[0] === '木' ? '仁爱、正直' : 
+                      strongest[0] === '火' ? '热情、光明' : 
+                      strongest[0] === '土' ? '诚信、稳重' : 
+                      strongest[0] === '金' ? '坚毅、果断' : '智慧、灵活'}的特质。<br>`;
+            
+            detail += `您最弱的五行是${weakest[0]}(${weakest[1]}分)，在${weakest[0] === '木' ? '决断力和行动力' : 
+                      weakest[0] === '火' ? '热情和社交' : 
+                      weakest[0] === '土' ? '耐心和恒心' : 
+                      weakest[0] === '金' ? '果断和魄力' : '智慧和应变'}方面需要加强。<br><br>`;
+            
             if (wuxing[riWx] > 8) {
-                detail += `您的${riWx}元素过于旺盛，性格中${riWx === '木' ? '固执' : riWx === '火' ? '急躁' : 
+                detail += `您的日主五行(${riWx})过于旺盛，性格中${riWx === '木' ? '固执' : riWx === '火' ? '急躁' : 
                           riWx === '土' ? '保守' : riWx === '金' ? '刚硬' : '多变'}的特质比较明显，`;
-                detail += '需要适当平衡，建议通过五行相生的方式来调和。';
+                detail += '需要适当平衡，建议通过五行相生的方式来调和。例如，可以多接触与您五行相克的元素，保持生活的平衡。';
             } else if (wuxing[riWx] < 4) {
-                detail += `您的${riWx}元素稍弱，性格中${riWx === '木' ? '决断力' : riWx === '火' ? '热情' : 
+                detail += `您的日主五行(${riWx})稍弱，性格中${riWx === '木' ? '决断力' : riWx === '火' ? '热情' : 
                           riWx === '土' ? '耐心' : riWx === '金' ? '果断' : '智慧'}方面需要加强。`;
+                detail += '建议多培养相关特质，通过学习和实践来提升自己。';
             }
             
             return detail;
@@ -371,24 +849,35 @@
             
             let detail = '';
             
+            detail += '【事业格局分析】<br><br>';
+            
             if (shishen.yue === '正官' || shishen.yue === '七杀') {
-                detail += '月柱官杀透干，事业心强，适合从事管理、公职或需要决断力的工作。';
+                detail += '月柱官杀透干，说明您事业心强，具有领导才能和决断力，适合从事管理、公职或需要承担责任的工作。';
+                detail += '您天生具有权威感，能够带领团队完成目标。在职业生涯中，您会逐渐走向管理岗位，成为团队的核心力量。';
             } else if (shishen.yue === '食神' || shishen.yue === '伤官') {
-                detail += '月柱食伤透干，创造力强，适合从事文化艺术、创意设计或技术研发工作。';
+                detail += '月柱食伤透干，说明您创造力强，思维活跃，适合从事文化艺术、创意设计或技术研发工作。';
+                detail += '您具有独特的见解和创新能力，在艺术、设计、写作等领域能够发挥特长。建议选择能够发挥创造力的职业。';
             } else if (shishen.yue === '正财' || shishen.yue === '偏财') {
-                detail += '月柱财星透干，理财能力强，适合从商或从事金融行业。';
+                detail += '月柱财星透干，说明您理财能力强，具有商业头脑，适合从商或从事金融行业。';
+                detail += '您对金钱有敏锐的嗅觉，善于把握商机。在商业领域能够取得不错的成绩，但需要注意风险控制。';
             } else if (shishen.yue === '正印' || shishen.yue === '偏印') {
-                detail += '月柱印星透干，学业优异，适合从事学术研究、教育或稳定的技术工作。';
+                detail += '月柱印星透干，说明您学业优异，知识渊博，适合从事学术研究、教育或稳定的技术工作。';
+                detail += '您具有很强的学习能力和领悟力，在知识领域能够取得成就。建议选择需要专业知识的职业。';
             }
             
-            detail += '<br><br>从五行来看，';
+            detail += '<br><br>【五行职业建议】<br>';
             if (wuxing['火'] > wuxing['水']) {
-                detail += '您的火元素旺盛，适合从事需要热情和行动力的工作，如销售、公关、演艺等。';
+                detail += '您的火元素旺盛，适合从事需要热情和行动力的工作，如销售、公关、演艺、教育等。';
+                detail += '火代表光明和热情，您在与人打交道的工作中能够发挥优势，用热情感染他人。';
             } else {
-                detail += '您的水元素相对较强，适合从事需要智慧和谋略的工作，如策划、分析、金融等。';
+                detail += '您的水元素相对较强，适合从事需要智慧和谋略的工作，如策划、分析、金融、IT等。';
+                detail += '水代表智慧和变通，您在需要思考和分析的工作中能够发挥特长，找到最佳解决方案。';
             }
             
-            detail += '<br><br>建议在事业发展中充分发挥自身优势，同时注意补足短板，中年时期将是您事业发展的黄金阶段。';
+            detail += '<br><br>【事业发展建议】<br>';
+            detail += '建议在事业发展中充分发挥自身优势，同时注意补足短板。中年时期将是您事业发展的黄金阶段，';
+            detail += '此时您的经验和能力都达到巅峰，能够取得显著成就。记得保持学习的心态，不断提升自己，';
+            detail += '适应行业变化。同时，建立良好的人脉关系，贵人相助将对您的事业发展起到重要作用。';
             
             return detail;
         }
@@ -403,22 +892,35 @@
             
             let detail = '';
             
+            detail += '【财运格局分析】<br><br>';
+            
             if (shishen.yue === '正财') {
-                detail += '月柱正财，财运稳定，主要依靠踏实工作获得收入，适合稳健投资。';
+                detail += '月柱正财透干，说明您财运稳定，主要依靠踏实工作获得收入。您是一个务实的人，';
+                detail += '懂得通过辛勤劳动积累财富。适合稳健投资，不适合高风险投机。您的财富会随着时间慢慢积累，';
+                detail += '晚年生活富足。';
             } else if (shishen.yue === '偏财') {
-                detail += '月柱偏财，财运起伏较大，有机会获得意外之财，但需注意风险控制，不宜过度投机。';
+                detail += '月柱偏财透干，说明您财运起伏较大，有机会获得意外之财。您具有冒险精神，';
+                detail += '善于把握投资机会。但需注意风险控制，不宜过度投机。偏财来的快去的也快，';
+                detail += '需要学会理财和守财。';
             } else {
-                detail += '您的财星不显，财运相对平稳，需要通过努力积累财富，不宜急于求成。';
+                detail += '您的财星不显，财运相对平稳。需要通过努力积累财富，不宜急于求成。';
+                detail += '虽然没有大富大贵的迹象，但只要脚踏实地，也能过上安稳富足的生活。';
             }
             
-            detail += '<br><br>从五行来看，';
+            detail += '<br><br>【五行财运影响】<br>';
             if (wuxing['土'] > 6) {
-                detail += '土元素旺盛，理财能力较强，善于积累财富，但有时过于保守，错失投资良机。';
+                detail += '土元素旺盛，说明您理财能力较强，善于积累财富。土代表稳定和积累，';
+                detail += '您懂得量入为出，不会盲目消费。但有时过于保守，可能会错失一些投资良机，';
+                detail += '建议适当尝试稳健的投资项目。';
             } else {
-                detail += '土元素稍弱，需要加强理财规划，建议制定详细的财务计划，避免冲动消费。';
+                detail += '土元素稍弱，说明您需要加强理财规划。建议制定详细的财务计划，';
+                detail += '避免冲动消费。可以学习一些投资理财知识，让财富实现增值。';
             }
             
-            detail += '<br><br>建议在财运较好的年份适当投资，但需谨慎选择，避免盲目跟风。偏财年份尤其要注意风险控制。';
+            detail += '<br><br>【理财建议】<br>';
+            detail += '建议在财运较好的年份适当投资，但需谨慎选择，避免盲目跟风。';
+            detail += '偏财年份尤其要注意风险控制，见好就收。同时，培养良好的消费习惯，';
+            detail += '区分必要支出和非必要支出。长期来看，稳健投资和持续积累是财富增长的关键。';
             
             return detail;
         }
@@ -434,15 +936,22 @@
             
             let detail = '';
             
+            detail += '【感情运势分析】<br><br>';
+            
             if (shishen.yue === spouse) {
-                detail += `月柱${spouse}透干，感情运势较好，异性缘佳，婚姻相对稳定。`;
+                detail += `月柱${spouse}透干，说明您感情运势较好，异性缘佳，婚姻相对稳定。`;
+                detail += '您在青年时期就可能遇到心仪的对象，感情发展顺利。婚姻生活也比较美满，';
+                detail += '与伴侣关系融洽。';
             } else if (shishen.shi === spouse) {
-                detail += `时柱${spouse}透干，晚年感情生活幸福，与伴侣关系融洽。`;
+                detail += `时柱${spouse}透干，说明您晚年感情生活幸福，与伴侣关系融洽。`;
+                detail += '您的感情可能来得稍晚一些，但一旦建立关系，会非常稳固。晚年时期，';
+                detail += '您与伴侣相互扶持，共度美好时光。';
             } else {
                 detail += '感情方面需要主动争取，多参加社交活动，扩大交友圈，缘分自会到来。';
+                detail += '您可能需要经历一些感情波折才能找到真正适合自己的人。<br><br>';
             }
             
-            detail += '<br><br>从性格来看，';
+            detail += '【性格与感情】<br>';
             const traits = {
                 '甲': '性格正直，对感情认真负责，但有时过于固执，需要学会变通。',
                 '乙': '性格温和，善于体贴对方，是很好的伴侣，但需要增强主见。',
@@ -466,6 +975,8 @@
             
             let detail = '';
             
+            detail += '【健康状况分析】<br><br>';
+            
             const healthMap = {
                 '木': '木主肝胆，注意保护肝脏和眼睛，避免过度劳累和情绪波动。',
                 '火': '火主心脏，注意心血管健康，避免情绪激动和熬夜。',
@@ -482,7 +993,8 @@
                 detail += '水元素过旺，需要注意肾脏和泌尿系统健康，建议避免熬夜，节制性生活。';
             }
             
-            detail += '<br><br>日常养生建议：保持规律作息，饮食均衡，适当运动，保持良好心态。';
+            detail += '<br><br>【日常养生建议】<br>';
+            detail += '保持规律作息，饮食均衡，适当运动，保持良好心态。';
             
             return detail;
         }
@@ -568,6 +1080,11 @@
             const yongShen = getYongShen(wuxing, qiangruo);
             const daxun = generateDaxun(bazi, gender);
             
+            // 获取用户等级
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const userLevel = user ? user.level : 1;
+            const maxWords = levelConfig[userLevel].maxWords;
+            
             document.getElementById('bazi-nian').textContent = bazi.n.g + bazi.n.z;
             document.getElementById('bazi-yue').textContent = bazi.y.g + bazi.y.z;
             document.getElementById('bazi-ri').textContent = bazi.r.g + bazi.r.z;
@@ -589,6 +1106,13 @@
             document.getElementById('nayin-ri').textContent = NY[bazi.r.g + bazi.r.z] || '';
             document.getElementById('nayin-shi').textContent = NY[bazi.s.g + bazi.s.z] || '';
             
+            // 更新五行分数显示
+            document.getElementById('mu-score').textContent = wuxing.木 + '分';
+            document.getElementById('huo-score').textContent = wuxing.火 + '分';
+            document.getElementById('tu-score').textContent = wuxing.土 + '分';
+            document.getElementById('jin-score').textContent = wuxing.金 + '分';
+            document.getElementById('shui-score').textContent = wuxing.水 + '分';
+            
             document.getElementById('wu-mu').style.width = (wuxing.木/total*100)+'%';
             document.getElementById('wu-huo').style.width = (wuxing.火/total*100)+'%';
             document.getElementById('wu-tu').style.width = (wuxing.土/total*100)+'%';
@@ -606,7 +1130,8 @@
             document.getElementById('balance-score').textContent = balance + '分';
             document.getElementById('yong-shen').textContent = yongShen;
             
-            document.getElementById('shishen-detail').innerHTML = getShishenDetail(bazi);
+            // 根据用户等级限制解读字数
+            document.getElementById('shishen-detail').innerHTML = truncateText(getShishenDetail(bazi), maxWords);
             
             let shishenMeaning = '';
             const uniqueShishen = [...new Set([getShishen(bazi.n.g, riGan), getShishen(bazi.y.g, riGan), 
@@ -614,13 +1139,13 @@
             uniqueShishen.forEach(s => {
                 shishenMeaning += `<strong>${s}：</strong>${getShishenMeaning(s)}<br><br>`;
             });
-            document.getElementById('shishen-meaning').innerHTML = shishenMeaning;
+            document.getElementById('shishen-meaning').innerHTML = truncateText(shishenMeaning, maxWords);
             
-            document.getElementById('xingge-detail').innerHTML = getXinggeDetail(bazi, wuxing);
-            document.getElementById('career-detail').innerHTML = getCareerDetail(bazi, wuxing);
-            document.getElementById('wealth-detail').innerHTML = getWealthDetail(bazi, wuxing);
-            document.getElementById('love-detail').innerHTML = getLoveDetail(bazi, gender);
-            document.getElementById('health-detail').innerHTML = getHealthDetail(bazi, wuxing);
+            document.getElementById('xingge-detail').innerHTML = truncateText(getXinggeDetail(bazi, wuxing), maxWords);
+            document.getElementById('career-detail').innerHTML = truncateText(getCareerDetail(bazi, wuxing), maxWords);
+            document.getElementById('wealth-detail').innerHTML = truncateText(getWealthDetail(bazi, wuxing), maxWords);
+            document.getElementById('love-detail').innerHTML = truncateText(getLoveDetail(bazi, gender), maxWords);
+            document.getElementById('health-detail').innerHTML = truncateText(getHealthDetail(bazi, wuxing), maxWords);
             
             const daxunGrid = document.getElementById('daxun-grid');
             daxunGrid.innerHTML = '';
@@ -631,9 +1156,12 @@
                 daxunGrid.appendChild(el);
             });
             
-            document.getElementById('forecast-detail').innerHTML = getForecast(bazi, daxun);
+            document.getElementById('forecast-detail').innerHTML = truncateText(getForecast(bazi, daxun), maxWords);
             
             document.getElementById('result').style.display = 'block';
+            
+            // 添加搜索记录
+            addSearchRecord(`${bazi.n.g}${bazi.n.z} ${bazi.y.g}${bazi.y.z} ${bazi.r.g}${bazi.r.z} ${bazi.s.g}${bazi.s.z}`);
         }
 
         document.addEventListener('DOMContentLoaded', init);
