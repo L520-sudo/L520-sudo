@@ -313,19 +313,25 @@
     <!-- Douyin Login Modal -->
     <div class="modal-overlay" id="douyin-modal">
         <div class="modal">
-            <div class="modal-title">抖音扫码登录</div>
+            <div class="modal-title">抖音登录</div>
             <div class="modal-form">
-                <div style="text-align: center; padding: 30px 0;">
+                <div style="text-align: center; padding: 20px 0;">
                     <div style="width: 200px; height: 200px; background: white; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
                         <div style="color: #333; font-size: 0.9rem;">
                             <div style="font-size: 3rem; margin-bottom: 10px;">📱</div>
                             <div>请使用抖音APP扫码登录</div>
                         </div>
                     </div>
-                    <div style="color: #f5f0e6; font-size: 0.9rem;">打开抖音扫一扫，即可快速登录</div>
+                    <div style="color: #f5f0e6; font-size: 0.9rem; margin-bottom: 20px;">打开抖音扫一扫，即可快速登录</div>
+                    
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                        <div style="color: #c9a959; margin-bottom: 10px;">或输入昵称登录</div>
+                        <input type="text" id="douyin-nickname" placeholder="请输入您的抖音昵称" style="width: 100%; padding: 12px; background: rgba(26, 26, 46, 0.8); border: 1px solid rgba(201, 169, 89, 0.3); border-radius: 10px; color: #f5f0e6; font-size: 0.9rem;">
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button class="btn btn-secondary" onclick="hideDouyinLogin()">取消</button>
+                    <button class="btn btn-primary" onclick="douyinLogin()">确认登录</button>
                 </div>
             </div>
         </div>
@@ -554,15 +560,10 @@
             alert('已退出登录');
         }
 
-        // 抖音扫码登录
+        // 抖音登录
         function showDouyinLogin() {
             document.getElementById('douyin-modal').classList.add('show');
-            
-            // 模拟扫码登录过程
-            setTimeout(() => {
-                hideDouyinLogin();
-                douyinLogin();
-            }, 3000);
+            document.getElementById('douyin-nickname').value = '';
         }
 
         function hideDouyinLogin() {
@@ -570,9 +571,10 @@
         }
 
         function douyinLogin() {
-            // 生成随机用户ID模拟抖音登录
+            // 获取用户输入的昵称
+            const nickname = document.getElementById('douyin-nickname').value.trim();
             const randomId = Date.now() + Math.random().toString(36).substr(2, 9);
-            const displayName = '抖音用户' + randomId.substring(randomId.length - 6);
+            const displayName = nickname || '抖音用户' + randomId.substring(randomId.length - 6);
             
             // 获取社交用户列表
             const socialUsers = JSON.parse(localStorage.getItem('socialUsers'));
@@ -692,17 +694,22 @@
             const correctAnswer = mathQuestions[currentQuestionIndex].answer;
             
             if (userAnswer === correctAnswer) {
+                // 答对了，进度+1
                 correctAnswers++;
+                currentQuestionIndex++;
+                showNextQuestion();
+            } else {
+                // 答错了，显示提示，不增加进度
+                alert('小学生不许上网^_^');
+                document.getElementById('math-answer').value = '';
+                document.getElementById('math-answer').focus();
             }
-            
-            currentQuestionIndex++;
-            showNextQuestion();
         }
 
         function finishMathQuiz() {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             
-            if (correctAnswers >= 40) { // 答对40题以上算通过
+            if (correctAnswers >= 50) { // 答对50题才算通过
                 // 更新用户等级为VIP
                 currentUser.level = 2;
                 currentUser.isVip = true;
@@ -729,7 +736,7 @@
                 
                 alert(`恭喜！您答对了${correctAnswers}/50题，已成功升级为VIP会员！\n\n现在可以查看3000字详细命理解读`);
             } else {
-                alert(`很遗憾，您只答对了${correctAnswers}/50题，需要答对40题以上才能升级VIP\n\n请重新挑战`);
+                alert(`很遗憾，您只答对了${correctAnswers}/50题，需要答对50题才能升级VIP\n\n请重新挑战`);
                 hideMathUpgradeModal();
             }
         }
