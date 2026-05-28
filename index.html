@@ -160,6 +160,7 @@
                         <div class="user-name" id="user-name"></div>
                         <div class="user-level" id="user-level"></div>
                     </div>
+                    <button class="btn btn-primary" id="upgrade-btn" style="display: none;" onclick="showUpgradeModal()">充值升级VIP</button>
                 </div>
                 <div id="auth-buttons">
                     <button class="social-btn wechat" onclick="socialLogin('wechat')">
@@ -312,7 +313,31 @@
         </div>
     </div>
 
-
+    <!-- Upgrade Modal -->
+    <div class="modal-overlay" id="upgrade-modal">
+        <div class="modal">
+            <div class="modal-title">升级VIP会员</div>
+            <div class="modal-form">
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="font-size: 3rem; color: #c9a959; margin-bottom: 10px;">¥3.9</div>
+                    <div style="color: #f5f0e6; margin-bottom: 20px;">升级VIP会员，解锁3000字详细命理解读</div>
+                    <div style="text-align: left; background: rgba(26, 26, 46, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                        <div style="color: #c9a959; margin-bottom: 10px;">VIP特权：</div>
+                        <div style="font-size: 0.9rem; line-height: 1.8;">
+                            ✓ 查看3000字详细命理解读<br>
+                            ✓ 解锁完整十神详解<br>
+                            ✓ 解锁详细事业财运分析<br>
+                            ✓ 解锁完整感情健康解读
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="hideUpgradeModal()">取消</button>
+                    <button class="btn btn-primary" onclick="upgradeToVip()">立即充值</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // 八字数据
@@ -335,8 +360,8 @@
 
         // 用户等级配置
         const levelConfig = {
-            1: { name: '普通用户', color: 'level-1', maxWords: 1000000, description: '可查看100万字完整命理解读' },
-            2: { name: 'VIP用户', color: 'level-2', maxWords: 1000, description: '可查看1000字基础命理解读' },
+            1: { name: '普通用户', color: 'level-1', maxWords: 1000, description: '可查看1000字基础命理解读，充值3.9元升级VIP' },
+            2: { name: 'VIP用户', color: 'level-2', maxWords: 3000, description: '可查看3000字详细命理解读' },
             3: { name: '管理员', color: 'level-3', maxWords: 1000000, description: '可查看完整解读+用户管理权限' }
         };
 
@@ -389,6 +414,14 @@
                 document.getElementById('user-level').textContent = level.name;
                 document.getElementById('user-level').className = 'user-level ' + level.color;
                 showLevelInfo(user.level);
+                
+                // 显示或隐藏充值按钮（仅普通用户显示）
+                if (user.level === 1) {
+                    document.getElementById('upgrade-btn').style.display = 'block';
+                } else {
+                    document.getElementById('upgrade-btn').style.display = 'none';
+                }
+                
                 if (user.level === 3) {
                     document.getElementById('admin-panel').style.display = 'block';
                     loadUserList();
@@ -402,6 +435,7 @@
                 document.getElementById('user-info').style.display = 'none';
                 document.getElementById('level-info').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'none';
+                document.getElementById('upgrade-btn').style.display = 'none';
             }
         }
 
@@ -443,6 +477,53 @@
             alert('已退出登录');
         }
 
+        function showUpgradeModal() {
+            document.getElementById('upgrade-modal').classList.add('show');
+        }
+
+        function hideUpgradeModal() {
+            document.getElementById('upgrade-modal').classList.remove('show');
+        }
+
+        function upgradeToVip() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (currentUser.level !== 1) {
+                alert('您已经是VIP用户或管理员');
+                hideUpgradeModal();
+                return;
+            }
+
+            // 模拟支付过程
+            const confirmed = confirm('确认支付¥3.9升级为VIP会员？\n\n支付成功后将立即生效');
+            
+            if (confirmed) {
+                // 更新用户等级为VIP
+                currentUser.level = 2;
+                currentUser.isVip = true;
+                currentUser.vipTime = new Date().toLocaleString('zh-CN');
+                
+                // 保存到localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // 更新社交用户列表
+                const socialUsers = JSON.parse(localStorage.getItem('socialUsers'));
+                const socialUser = socialUsers.find(u => u.id === currentUser.id);
+                if (socialUser) {
+                    socialUser.level = 2;
+                    socialUser.isVip = true;
+                    socialUser.vipTime = currentUser.vipTime;
+                    localStorage.setItem('socialUsers', JSON.stringify(socialUsers));
+                }
+                
+                // 刷新界面
+                checkLogin();
+                hideUpgradeModal();
+                
+                alert('充值成功！您已升级为VIP会员\n\n现在可以查看3000字详细命理解读');
+            }
+        }
+
         // 社交登录（微信/QQ）
         function socialLogin(type) {
             // 生成随机用户ID模拟社交登录
@@ -456,12 +537,14 @@
             // 检查社交用户总数
             const totalSocialCount = socialUsers.length;
             
-            // 前1000个社交用户为VIP（等级2），之后为普通用户（等级1）
-            // 一级用户：1000000个，二级用户：1000个
-            let userLevel = 2; // 默认VIP用户
+            // 限制普通用户数量为1000个
             if (totalSocialCount >= 1000) {
-                userLevel = 1; // 超过1000个后为普通用户
+                alert('抱歉，普通用户名额已满，请稍后再试或联系管理员');
+                return;
             }
+            
+            // 新用户默认为普通用户（等级1）
+            const userLevel = 1;
             
             // 创建社交用户
             const socialUser = {
@@ -469,6 +552,7 @@
                 username: displayName,
                 type: type,
                 level: userLevel,
+                isVip: false,
                 loginTime: new Date().toLocaleString('zh-CN')
             };
             
